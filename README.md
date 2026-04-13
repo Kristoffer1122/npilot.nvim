@@ -1,7 +1,6 @@
-# npilot.nvim is my solution to the problem of using GitHub Copilot in Neovim. 
-### It's meant to be more of a convinient way to use Copilot. It allows you to quickly accept or reject suggestions without to use the ugly inline suggestions.
-
-###
+# npilot.nvim 
+This plugin is my solution to the problem of using GitHub Copilot in Neovim. 
+It's meant to be more of a convinient way to use Copilot. It allows you to quickly accept or reject suggestions without to use the ugly inline suggestions.
 
 ## Usage
 To use npilot, obviously you will need a github copilot subscription, and have it configured.

@@ -1,7 +1,11 @@
-### npilot.nvim is my solution to the problem of using GitHub Copilot in Neovim. It's meant to be more of a convinient way to use Copilot. It allows you to quickly accept or reject suggestions without to use the ugly inline suggestions.
+# npilot.nvim is my solution to the problem of using GitHub Copilot in Neovim. 
+### It's meant to be more of a convinient way to use Copilot. It allows you to quickly accept or reject suggestions without to use the ugly inline suggestions.
+
+###
 
 ## Usage
-To use npilot, the default keybindings are as follows:
+To use npilot, obviously you will need a github copilot subscription, and have it configured.
+The default keybindings are as follows:
 - `<leader>np` - prompts your selection in the chat and opens the chat window, then press y/n to accept/reject the suggestion.
 
 ## Installation

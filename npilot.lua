@@ -1,64 +1,84 @@
 local Popup = require("plenary.popup")
-File = vim.api.nvim_buf_get_name(0)
-Diff = vim.fn.system({ "git", "diff", File })
+local Chat = require("CopilotChat")
+local Select = require("CopilotChat.select")
 
-Out = {}
-InHunk = false
-Count = 0
-
-for Line in Diff:gmatch("[^\n]+") do
-	Count = Count + 1
-	local pad = ""
-	if Count < 10 then
-		pad = "  "
-	elseif Count < 100 then
-		pad = " "
-	elseif Count < 1000 then
-		pad = ""
-	else
-		pad = ""
-	end
-	if Line:find("^@@") then
-		InHunk = true
-	elseif InHunk then
-		table.insert(Out, ("%s %d %s"):format(pad, Count, Line))
-	end
+local function GetVisualSelection()
+	local Start = vim.fn.getpos("'<")
+	local End = vim.fn.getpos("'>")
+	local Lines = vim.api.nvim_buf_get_lines(0, Start[2] - 1, End[2], false)
+	return Lines, Start[2] - 1, End[2]
 end
 
-local function create_window()
-	local width = 60
-	local height = 10
-	local borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" }
-	local bufnr = vim.api.nvim_create_buf(false, false)
-	local npilot, win = Popup.create(bufnr, {
+local function Npilot()
+	local OrigBufnr = vim.api.nvim_get_current_buf()
+	local Lines, StartLine, EndLine = GetVisualSelection()
+	local Code = table.concat(Lines, "\n")
+
+	local Width = math.floor(vim.o.columns / 2)
+	local Height = math.floor(vim.o.lines / 2)
+	local Borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" }
+	local PopupBufnr = vim.api.nvim_create_buf(false, true)
+	local WinId, Win = Popup.create(PopupBufnr, {
 		title = "npilot",
 		highlight = "npilotPopup",
-		line = math.floor(((vim.o.lines - height) / 2) - 1),
-		col = math.floor((vim.o.columns - width) / 2),
-		minwidth = width,
-		minheight = height,
-		borderchars = borderchars,
+		line = math.floor(((vim.o.lines - Height) / 2) - 1),
+		col = math.floor((vim.o.columns - Width) / 2),
+		minwidth = Width,
+		minheight = Height,
+		borderchars = Borderchars,
 	})
 
-	-- how do we set the input of the popup to the diff output?
-	vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, Out)
+	vim.api.nvim_buf_set_lines(PopupBufnr, 0, -1, false, { "Waiting for Copilot..." })
 
-	vim.api.nvim_win_set_option(win.border.win_id, "winhl", "Normal:npilotPopupBorder")
-	vim.api.nvim_buf_set_keymap(
-		bufnr,
-		"n",
-		"q",
-		"<cmd>lua vim.api.nvim_win_close(" .. win.win_id .. ", true)<CR>",
-		{ noremap = true, silent = true }
-	)
-	vim.api.nvim_buf_set_keymap(
-		bufnr,
-		"n",
-		"<Esc>",
-		"<cmd>lua vim.api.nvim_win_close(" .. win.win_id .. ", true)<CR>",
-		{ noremap = true, silent = true }
-	)
+	Chat.ask("Improve this code. Return only the improved code, no explanation.", {
+		selection = Select.visual,
+		callback = function(Response)
+			vim.schedule(function()
+				print(vim.inspect(Response))
+			end)
+		end,
+		callback = function(Response)
+			vim.schedule(function()
+				local ResponseLines = vim.split(Response, "\n")
 
-	return { bufnr = bufnr, win_id = win.win_id }
+				-- Strip markdown code fences if present
+				if ResponseLines[1] and ResponseLines[1]:match("^```") then
+					table.remove(ResponseLines, 1)
+				end
+				if ResponseLines[#ResponseLines] and ResponseLines[#ResponseLines]:match("^```") then
+					table.remove(ResponseLines, #ResponseLines)
+				end
+
+				vim.api.nvim_buf_set_lines(PopupBufnr, 0, -1, false, ResponseLines)
+
+				-- y to accept, n/q to discard
+				vim.api.nvim_buf_set_keymap(PopupBufnr, "n", "y", "", {
+					noremap = true,
+					silent = true,
+					callback = function()
+						vim.api.nvim_buf_set_lines(OrigBufnr, StartLine, EndLine, false, ResponseLines)
+						vim.api.nvim_win_close(WinId, true)
+					end,
+				})
+
+				vim.api.nvim_buf_set_keymap(PopupBufnr, "n", "n", "", {
+					noremap = true,
+					silent = true,
+					callback = function()
+						vim.api.nvim_win_close(WinId, true)
+					end,
+				})
+			end)
+		end,
+	})
+
+	vim.api.nvim_buf_set_keymap(PopupBufnr, "n", "q", "", {
+		noremap = true,
+		silent = true,
+		callback = function()
+			vim.api.nvim_win_close(WinId, true)
+		end,
+	})
 end
-create_window()
+
+vim.keymap.set("v", "<leader>np", Npilot, { noremap = true, silent = true })

@@ -1,11 +1,16 @@
-local out = vim.fn.system({ "echo", "hello" })
-print(out)
+Diff = vim.fn.system({ "git", "diff" })
+File = vim.api.nvim_buf_get_name(0)
+print(File)
 
-function Main()
-	local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-	local text = table.concat(buffer, "\n")
+Start_diff = nil
 
-	-- print(text)
+print("\n")
+
+for line in Diff:gmatch("[^\n]+") do
+	-- find start of diff.
+	if line:find("[@@]") then
+		Start_diff = (debug.getinfo(1).currentline + 1)
+		print("DIFF:", Start_diff)
+	end
+	print(line)
 end
-
-Main()

@@ -9,6 +9,8 @@ if not Ok then
 end
 
 local function GetVisualSelection()
+	-- Exit visual mode first to update '< and '> marks
+	vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "x", false)
 	local Start = vim.fn.getpos("'<")
 	local End = vim.fn.getpos("'>")
 	local Lines = vim.api.nvim_buf_get_lines(0, Start[2] - 1, End[2], false)
@@ -35,8 +37,6 @@ local function Npilot()
 	})
 
 	vim.api.nvim_buf_set_lines(PopupBufnr, 0, -1, false, { "Waiting for Copilot..." })
-	vim.cmd("stopinsert")
-	vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", false)
 
 	local Filetype = vim.bo[OrigBufnr].filetype
 	Chat.ask("Improve this code. Return only the improved code, no explanation.", {

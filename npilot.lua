@@ -37,6 +37,8 @@ local function Npilot()
 	vim.api.nvim_buf_set_lines(PopupBufnr, 0, -1, false, { "Waiting for Copilot..." })
 
 	Chat.ask("Improve this code. Return only the improved code, no explanation.\n\n" .. Code, {
+		selection = false,
+		headless = true,
 		callback = function(Response)
 			vim.schedule(function()
 				local ResponseText = type(Response) == "table" and Response.content or Response

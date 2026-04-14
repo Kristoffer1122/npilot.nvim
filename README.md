@@ -17,6 +17,7 @@ The default keybindings are as follows:
 
 ### [lazy.nvim](https://github.com/folke/lazy.nvim)
 
+npilot.nvim
 ```lua
 return {
   'Kristoffer1122/npilot.nvim',
@@ -32,8 +33,21 @@ return {
 }
 ```
 
+CopilotChat.nvim
+```lua
+return {
+  'CopilotC-Nvim/CopilotChat.nvim',
+  dependencies = {
+    'github/copilot.vim',
+    'nvim-lua/plenary.nvim',
+  },
+  opts = {},
+}
+```
+
 ### [packer.nvim](https://github.com/wbthomason/packer.nvim)
 
+npilot.nvim
 ```lua
 use {
     "Kristoffer1122/npilot.nvim",
@@ -49,8 +63,21 @@ use {
 }
 ```
 
+CopilotChat.nvim
+```lua
+use {
+  'CopilotC-Nvim/CopilotChat.nvim',
+  dependencies = {
+    'github/copilot.vim',
+    'nvim-lua/plenary.nvim',
+  },
+  opts = {},
+}
+```
+
 ### [vim-plug](https://github.com/junegunn/vim-plug)
 
+npilot.nvim
 ```vim
 Plug 'github/copilot.vim'
 Plug 'CopilotC-Nvim/CopilotChat.nvim'
@@ -62,8 +89,20 @@ lua require("npilot").setup {
 }
 ```
 
+CopilotChat.nvim
+```vim
+" CopilotChat.nvim
+Plug 'github/copilot.vim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'CopilotC-Nvim/CopilotChat.nvim'
+
+" After plug#end():
+lua require("copilot-chat").setup {}
+```
+
 ### [mini.deps](https://github.com/echasnovski/mini.deps)
 
+npilot.nvim
 ```lua
 MiniDeps.add({
     source = "Kristoffer1122/npilot.nvim",
@@ -75,4 +114,16 @@ MiniDeps.add({
 require("npilot").setup {
     model = "gpt-4.1",
 }
+```
+
+CopilotChat.nvim
+```lua
+MiniDeps.add({
+    source = "CopilotC-Nvim/CopilotChat.nvim",
+    depends = {
+        "github/copilot.vim",
+        "nvim-lua/plenary.nvim",
+    },
+})
+require("copilot-chat").setup {}
 ```

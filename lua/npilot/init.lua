@@ -4,6 +4,7 @@ if not Ok then
 	return {}
 end
 
+-- default to gpt-4.1 override in setup
 local Config = {
 	model = "gpt-4.1",
 }

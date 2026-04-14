@@ -1,27 +1,34 @@
 # npilot.nvim 
 This plugin is my solution to the problem of using GitHub Copilot in Neovim. 
-It's meant to be more of a convinient way to use Copilot. It allows you to quickly accept or reject suggestions without to use the ugly inline suggestions.
+It's meant to be more of a convenient way to use Copilot. It allows you to quickly accept or reject suggestions without using the ugly inline suggestions.
 
 ## Usage
-To use npilot, obviously you will need a github copilot subscription, and have it configured.
+To use npilot, obviously you will need a GitHub Copilot subscription, and have it configured.
+
+### Configuration
+You can configure the model to use by setting the `model` option in the setup function (Defaults to gpt-4.1). Any model supported by GitHub Copilot Chat can be used (e.g., `gpt-4o`, `claude-sonnet-4`, `claude-opus-4.5`, etc.).
+
+### Keybindings
 The default keybindings are as follows:
 - `<leader>np` - prompts your selection in the chat and opens the chat window, then press y/n to accept/reject the suggestion.
+
 
 ## Installation
 
 ### [lazy.nvim](https://github.com/folke/lazy.nvim)
 
 ```lua
-{
-    "Kristoffer1122/npilot.nvim",
-    dependencies = {
-        "CopilotC-Nvim/CopilotChat.nvim",
-        "github/copilot.vim",
-        "nvim-lua/plenary.nvim",
-    },
-    config = function()
-        require("npilot")
-    end,
+return {
+  'Kristoffer1122/npilot.nvim',
+  dependencies = {
+    'CopilotC-Nvim/CopilotChat.nvim',
+    'github/copilot.vim',
+  },
+  config = function()
+    require('npilot').setup {
+      model = 'claude-opus-4.5',
+    }
+  end,
 }
 ```
 
@@ -33,10 +40,11 @@ use {
     requires = {
         "CopilotC-Nvim/CopilotChat.nvim",
         "github/copilot.vim",
-        "nvim-lua/plenary.nvim",
     },
     config = function()
-        require("npilot")
+        require("npilot").setup {
+            model = "claude-opus-4.5",
+        }
     end,
 }
 ```
@@ -44,13 +52,14 @@ use {
 ### [vim-plug](https://github.com/junegunn/vim-plug)
 
 ```vim
-Plug 'nvim-lua/plenary.nvim'
 Plug 'github/copilot.vim'
 Plug 'CopilotC-Nvim/CopilotChat.nvim'
 Plug 'Kristoffer1122/npilot.nvim'
 
 " After plug#end():
-lua require("npilot")
+lua require("npilot").setup {
+    model = "claude-opus-4.5",
+}
 ```
 
 ### [mini.deps](https://github.com/echasnovski/mini.deps)
@@ -61,8 +70,9 @@ MiniDeps.add({
     depends = {
         "CopilotC-Nvim/CopilotChat.nvim",
         "github/copilot.vim",
-        "nvim-lua/plenary.nvim",
     },
 })
-require("npilot")
+require("npilot").setup {
+    model = "claude-opus-4.5",
+}
 ```

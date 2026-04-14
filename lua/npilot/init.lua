@@ -1,60 +1,49 @@
-local Popup = require("plenary.popup")
-local Chat = require("CopilotChat")
-local Select = require("CopilotChat.select")
-
 local Ok, Chat = pcall(require, "CopilotChat")
 if not Ok then
 	vim.notify("npilot: CopilotChat.nvim is required. Install CopilotC-Nvim/CopilotChat.nvim", vim.log.levels.ERROR)
 	return
 end
 
-local function GetVisualSelection()
-	-- Exit visual mode first to update '< and '> marks
-	vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "x", false)
-	local Start = vim.fn.getpos("'<")
-	local End = vim.fn.getpos("'>")
-	local Lines = vim.api.nvim_buf_get_lines(0, Start[2] - 1, End[2], false)
-	return Lines, Start[2] - 1, End[2]
-end
-
 local function Npilot()
 	local OrigBufnr = vim.api.nvim_get_current_buf()
-	local Lines, StartLine, EndLine = GetVisualSelection()
+	local Start = vim.fn.getpos("'<")
+	local End = vim.fn.getpos("'>")
+	local Lines = vim.api.nvim_buf_get_lines(OrigBufnr, Start[2] - 1, End[2], false)
+	local StartLine = Start[2] - 1
+	local EndLine = End[2]
 	local Code = table.concat(Lines, "\n")
+
+	if Code == "" then
+		vim.notify("No code selected")
+		return
+	end
 
 	local Width = math.floor(vim.o.columns / 2)
 	local Height = math.floor(vim.o.lines / 2)
-	local Borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" }
 	local PopupBufnr = vim.api.nvim_create_buf(false, true)
-	local WinId, Win = Popup.create(PopupBufnr, {
-		title = "npilot",
-		highlight = "npilotPopup",
-		line = math.floor(((vim.o.lines - Height) / 2) - 1),
+	local WinId = vim.api.nvim_open_win(PopupBufnr, true, {
+		relative = "editor",
+		row = math.floor((vim.o.lines - Height) / 2),
 		col = math.floor((vim.o.columns - Width) / 2),
-		minwidth = Width,
-		minheight = Height,
-		borderchars = Borderchars,
+		width = Width,
+		height = Height,
+		style = "minimal",
+		border = "rounded",
+		title = " npilot  loading... ",
+		title_pos = "center",
 	})
 
 	vim.api.nvim_buf_set_lines(PopupBufnr, 0, -1, false, { "Waiting for Copilot..." })
 
-	local Filetype = vim.bo[OrigBufnr].filetype
-	Chat.ask("Improve this code. Return only the improved code, no explanation.", {
-		selection = function()
-			return {
-				content = Code,
-				filetype = Filetype,
-				start_row = StartLine + 1,
-				end_row = EndLine,
-			}
-		end,
+	local Prompt = "Improve this code. Return only the improved code, no explanation.\n\n```\n" .. Code .. "\n```"
+
+	Chat.ask(Prompt, {
 		headless = true,
 		callback = function(Response)
 			vim.schedule(function()
-				local ResponseText = type(Response) == "table" and Response.content or Response
+				local ResponseText = Response.content or ""
 				local ResponseLines = vim.split(ResponseText, "\n")
 
-				-- Strip markdown code fences if present
 				if ResponseLines[1] and ResponseLines[1]:match("^```") then
 					table.remove(ResponseLines, 1)
 				end
@@ -63,8 +52,8 @@ local function Npilot()
 				end
 
 				vim.api.nvim_buf_set_lines(PopupBufnr, 0, -1, false, ResponseLines)
+				vim.api.nvim_win_set_config(WinId, { title = " npilot  [y] accept  [n/q] discard " })
 
-				-- y to accept, n/q to discard
 				vim.api.nvim_buf_set_keymap(PopupBufnr, "n", "y", "", {
 					noremap = true,
 					silent = true,
@@ -94,4 +83,6 @@ local function Npilot()
 	})
 end
 
-vim.keymap.set("v", "<leader>np", Npilot, { noremap = true, silent = true })
+vim.keymap.set("v", "<leader>np", "<Esc><cmd>lua require('npilot').run()<CR>", { noremap = true, silent = true })
+
+return { run = Npilot }

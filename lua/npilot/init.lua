@@ -1,8 +1,12 @@
 local Ok, Chat = pcall(require, "CopilotChat")
 if not Ok then
 	vim.notify("npilot: CopilotChat.nvim is required. Install CopilotC-Nvim/CopilotChat.nvim", vim.log.levels.ERROR)
-	return
+	return {}
 end
+
+local Config = {
+	model = "gpt-4.1",
+}
 
 local function Npilot()
 	local OrigBufnr = vim.api.nvim_get_current_buf()
@@ -39,6 +43,7 @@ local function Npilot()
 
 	Chat.ask(Prompt, {
 		headless = true,
+		model = Config.model,
 		callback = function(Response)
 			vim.schedule(function()
 				local ResponseText = Response.content or ""
@@ -52,7 +57,7 @@ local function Npilot()
 				end
 
 				vim.api.nvim_buf_set_lines(PopupBufnr, 0, -1, false, ResponseLines)
-				vim.api.nvim_win_set_config(WinId, { title = " npilot [y/N] accept/discard " })
+				vim.api.nvim_win_set_config(WinId, { title = " npilot [y/N] " })
 
 				vim.api.nvim_buf_set_keymap(PopupBufnr, "n", "y", "", {
 					noremap = true,
@@ -83,6 +88,10 @@ local function Npilot()
 	})
 end
 
+local function Setup(Opts)
+	Config = vim.tbl_extend("force", Config, Opts or {})
+end
+
 vim.keymap.set("v", "<leader>np", "<Esc><cmd>lua require('npilot').run()<CR>", { noremap = true, silent = true })
 
-return { run = Npilot }
+return { run = Npilot, setup = Setup }

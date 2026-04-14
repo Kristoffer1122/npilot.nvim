@@ -36,10 +36,12 @@ local function Npilot()
 
 	vim.api.nvim_buf_set_lines(PopupBufnr, 0, -1, false, { "Waiting for Copilot..." })
 
+	local Filetype = vim.bo[OrigBufnr].filetype
 	Chat.ask("Improve this code. Return only the improved code, no explanation.", {
 		selection = function()
 			return {
 				content = Code,
+				filetype = Filetype,
 				start_row = StartLine + 1,
 				end_row = EndLine,
 			}

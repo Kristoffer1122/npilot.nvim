@@ -36,8 +36,7 @@ local function Npilot()
 
 	vim.api.nvim_buf_set_lines(PopupBufnr, 0, -1, false, { "Waiting for Copilot..." })
 
-	Chat.ask("Improve this code. Return only the improved code, no explanation.", {
-		selection = Select.visual,
+	Chat.ask("Improve this code. Return only the improved code, no explanation.\n\n" .. Code, {
 		callback = function(Response)
 			vim.schedule(function()
 				print(vim.inspect(Response))
@@ -45,7 +44,8 @@ local function Npilot()
 		end,
 		callback = function(Response)
 			vim.schedule(function()
-				local ResponseLines = vim.split(Response, "\n")
+				local ResponseText = type(Response) == "table" and Response.response or Response
+				local ResponseLines = vim.split(ResponseText, "\n")
 
 				-- Strip markdown code fences if present
 				if ResponseLines[1] and ResponseLines[1]:match("^```") then

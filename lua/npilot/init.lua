@@ -29,7 +29,7 @@ local function Npilot()
 		height = Height,
 		style = "minimal",
 		border = "rounded",
-		title = " npilot  loading... ",
+		title = " npilot ",
 		title_pos = "center",
 	})
 
@@ -52,7 +52,7 @@ local function Npilot()
 				end
 
 				vim.api.nvim_buf_set_lines(PopupBufnr, 0, -1, false, ResponseLines)
-				vim.api.nvim_win_set_config(WinId, { title = " npilot  [y] accept  [n/q] discard " })
+				vim.api.nvim_win_set_config(WinId, { title = " npilot [y/N] accept/discard " })
 
 				vim.api.nvim_buf_set_keymap(PopupBufnr, "n", "y", "", {
 					noremap = true,

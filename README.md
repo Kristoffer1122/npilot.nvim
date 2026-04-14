@@ -17,7 +17,7 @@ The default keybindings are as follows:
 
 ### [lazy.nvim](https://github.com/folke/lazy.nvim)
 
-npilot.nvim
+npilot.lua
 ```lua
 return {
   'Kristoffer1122/npilot.nvim',
@@ -33,7 +33,7 @@ return {
 }
 ```
 
-CopilotChat.nvim
+CopilotChat.lua
 ```lua
 return {
   'CopilotC-Nvim/CopilotChat.nvim',
@@ -47,7 +47,7 @@ return {
 
 ### [packer.nvim](https://github.com/wbthomason/packer.nvim)
 
-npilot.nvim
+npilot.lua
 ```lua
 use {
     "Kristoffer1122/npilot.nvim",
@@ -63,7 +63,7 @@ use {
 }
 ```
 
-CopilotChat.nvim
+CopilotChat.lua
 ```lua
 use {
   'CopilotC-Nvim/CopilotChat.nvim',
@@ -77,7 +77,7 @@ use {
 
 ### [vim-plug](https://github.com/junegunn/vim-plug)
 
-npilot.nvim
+npilot.lua
 ```vim
 Plug 'github/copilot.vim'
 Plug 'CopilotC-Nvim/CopilotChat.nvim'
@@ -89,7 +89,7 @@ lua require("npilot").setup {
 }
 ```
 
-CopilotChat.nvim
+CopilotChat.lua
 ```vim
 " CopilotChat.nvim
 Plug 'github/copilot.vim'
@@ -102,7 +102,7 @@ lua require("copilot-chat").setup {}
 
 ### [mini.deps](https://github.com/echasnovski/mini.deps)
 
-npilot.nvim
+npilot.lua
 ```lua
 MiniDeps.add({
     source = "Kristoffer1122/npilot.nvim",
@@ -116,7 +116,7 @@ require("npilot").setup {
 }
 ```
 
-CopilotChat.nvim
+CopilotChat.lua
 ```lua
 MiniDeps.add({
     source = "CopilotC-Nvim/CopilotChat.nvim",

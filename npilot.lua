@@ -39,12 +39,7 @@ local function Npilot()
 	Chat.ask("Improve this code. Return only the improved code, no explanation.\n\n" .. Code, {
 		callback = function(Response)
 			vim.schedule(function()
-				print(vim.inspect(Response))
-			end)
-		end,
-		callback = function(Response)
-			vim.schedule(function()
-				local ResponseText = type(Response) == "table" and Response.response or Response
+				local ResponseText = type(Response) == "table" and Response.content or Response
 				local ResponseLines = vim.split(ResponseText, "\n")
 
 				-- Strip markdown code fences if present

@@ -6,7 +6,7 @@ It's meant to be more of a convenient way to use Copilot. It allows you to quick
 To use npilot, obviously you will need a GitHub Copilot subscription, and have it configured.
 
 ### Configuration
-You can configure the model to use by setting the `model` option in the setup function (Defaults to gpt-4.1). Any model supported by GitHub Copilot Chat can be used (e.g., `gpt-4o`, `claude-sonnet-4`, `claude-opus-4.5`, etc.).
+You can configure the model to use by setting the `model` option in the setup function (Defaults to gpt-4.1). Any model supported by GitHub Copilot Chat can be used (e.g., `gpt-4o`, `claude-sonnet-4`, `gpt-4.1`, etc.).
 
 ### Keybindings
 The default keybindings are as follows:
@@ -26,7 +26,7 @@ return {
   },
   config = function()
     require('npilot').setup {
-      model = 'claude-opus-4.5',
+      model = 'gpt-4.1',
     }
   end,
 }
@@ -43,7 +43,7 @@ use {
     },
     config = function()
         require("npilot").setup {
-            model = "claude-opus-4.5",
+            model = "gpt-4.1",
         }
     end,
 }
@@ -58,7 +58,7 @@ Plug 'Kristoffer1122/npilot.nvim'
 
 " After plug#end():
 lua require("npilot").setup {
-    model = "claude-opus-4.5",
+    model = "gpt-4.1",
 }
 ```
 
@@ -73,6 +73,6 @@ MiniDeps.add({
     },
 })
 require("npilot").setup {
-    model = "claude-opus-4.5",
+    model = "gpt-4.1",
 }
 ```

@@ -2,6 +2,12 @@ local Popup = require("plenary.popup")
 local Chat = require("CopilotChat")
 local Select = require("CopilotChat.select")
 
+local Ok, Chat = pcall(require, "CopilotChat")
+if not Ok then
+	vim.notify("npilot: CopilotChat.nvim is required. Install CopilotC-Nvim/CopilotChat.nvim", vim.log.levels.ERROR)
+	return
+end
+
 local function GetVisualSelection()
 	local Start = vim.fn.getpos("'<")
 	local End = vim.fn.getpos("'>")
